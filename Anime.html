@@ -485,8 +485,8 @@
       renderAdInto(adBox);
       openModal('ad');
 
-      // Quick model: tombol untuk klaim setelah minimal 5 detik
-      let left = 5; adTimer.textContent = `Sisa waktu: ${left} detik`;
+      // Quick model: tombol untuk klaim setelah minimal 10 detik
+      let left = 10; adTimer.textContent = `Sisa waktu: ${left} detik`;
       const t = setInterval(()=>{
         left--; adTimer.textContent = `Sisa waktu: ${left} detik`;
         if(left<=0){
