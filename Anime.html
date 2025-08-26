@@ -416,7 +416,17 @@
         `;
         return;
       }
-   
+
+ const username = getCurrentUsername();
+      const role = u.role;
+      const keys = u.keys ?? 0;
+      bar.innerHTML = `
+        <span class="pill">👤 ${username}</span>
+        <span class="pill">${role === '🔑 Basic'}</span>
+        <button class="btn danger" onclick="logout()">Logout</button>
+      `;
+    }
+      
     /* =========================
        ADs RANDOM
        ========================= */
