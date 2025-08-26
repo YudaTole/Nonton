@@ -242,31 +242,12 @@
       <p style="margin:8px 0 12px;color:#a7e7e7">Pilih salah satu:</p>
       <div class="actions">
         <button class="btn" onclick="watchAdForKeys()">Tonton Iklan (+3 kunci)</button>
-        <button class="btn success" onclick="openModal('upgrade')">Lebih Banyak Kunci</button>
       </div>
       <div class="close" onclick="closeModal('need-keys')">Tutup</div>
     </div>
   </div>
 
-  <!-- UPGRADE PREMIUM (SIMULASI) -->
-  <div id="modal-upgrade" class="modal">
-    <div class="modal-content">
-      <h3>Lebih Banyak Kunci</h3>
-      <p style="margin:6px 0 10px;color:#a7e7e7">Pilih metode (simulasi, tanpa pembayaran):</p>
-      <div class="actions">
-        <button class="btn">12 key</button>
-        <button class="btn">15 key</button>
-        <button class="btn">20 key</button>
-        <button class="btn">30 key</button>
-      </div>
-      <div class="actions" style="margin-top:10px">
-        <button class="btn success" onclick="confirmUpgrade()">Konfirmasi Upgrade</button>
-        <div class="close" onclick="closeModal('upgrade')">Batal</div>
-      </div>
-      <p style="color:#aab; font-size:12px; margin-top:6px;">* Demo: tombol ini langsung Menambahkan kunci dengan iklan.</p>
-    </div>
-  </div>
-
+ 
   <!-- MODAL IKLAN (RANDOM FOTO/VIDEO) -->
   <div id="modal-ad" class="modal">
     <div class="modal-content">
@@ -435,18 +416,7 @@
         `;
         return;
       }
-      const username = getCurrentUsername();
-      const role = u.role;
-      const keys = u.keys ?? 0;
-      bar.innerHTML = `
-        <span class="pill">👤 ${username}</span>
-        <span class="pill">${role === 'premium' ? '🌟 Premium' : '🔑 Basic'}</span>
-        ${role === 'premium' ? '' : `<span class="pill">Kunci: ${keys}</span>`}
-        ${role === 'premium' ? '' : `<button class="btn success" onclick="openModal('upgrade')">Upgrade</button>`}
-        <button class="btn danger" onclick="logout()">Logout</button>
-      `;
-    }
-
+   
     /* =========================
        ADs RANDOM
        ========================= */
