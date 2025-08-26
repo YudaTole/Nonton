@@ -1,222 +1,604 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YudNime</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Om Yudz — Nonton Anime Sub Indo</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #111; color: #fff; margin: 0; }
-    header {
-      background: #222;
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    :root{
+      --bg:#0a0a0a; --panel:#111; --line:#00ffff; --text:#e8ffff;
+      --muted:#a7e7e7; --danger:#ff3b3b; --success:#00d68f;
     }
-    header h1 {
-      margin: 0;
-      font-size: 22px;
-      color: #0af;
-      font-weight: bold;
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+
+    /* HEADER */
+    header{
+      position:sticky;top:0;z-index:60;
+      display:flex;align-items:center;gap:12px;justify-content:space-between;
+      background:linear-gradient(180deg,#0f0f10,#0a0a0a 90%);
+      padding:12px 16px;border-bottom:1px solid rgba(0,255,255,.15);
+      box-shadow:0 6px 24px rgba(0,255,255,.08);
     }
-    header input {
-      padding: 8px;
-      border-radius: 5px;
-      border: none;
-      outline: none;
+    .brand{display:flex;align-items:center;gap:12px}
+    header img{height:44px;width:44px;border-radius:50%;border:2px solid rgba(0,255,255,.35)}
+    header h1{margin:0;font-size:16px;letter-spacing:.4px;color:var(--text)}
+    .userbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .pill{
+      font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid rgba(0,255,255,.3);
+      background:#0f1112; color:var(--text)
     }
-    .anime-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 15px;
-      padding: 20px;
+    .btn{
+      padding:8px 12px;border-radius:10px;border:1px solid rgba(0,255,255,.35);
+      background:var(--line);color:#002;font-weight:700;cursor:pointer
     }
-    .card {
-      position: relative;
-      border-radius: 10px;
-      overflow: hidden;
-      cursor: pointer;
-      background: #000;
+    .btn.outline{background:transparent;color:var(--text)}
+    .btn.danger{background:var(--danger);border-color:transparent;color:#fff}
+    .btn.success{background:var(--success);border-color:transparent;color:#001}
+
+    /* SEARCH */
+    .search{
+      max-width:1100px;margin:16px auto 0;padding:0 16px 8px;
     }
-    .card img {
-      width: 100%;
-      height: 140px;
-      object-fit: cover;
-      filter: brightness(0.7);
-      transition: 0.3s;
+    .search input{
+      width:100%;padding:12px 14px;border-radius:10px;border:2px solid rgba(0,255,255,.35);
+      background:#0f0f10;color:var(--text);font-size:15px;outline:none;
+      box-shadow:0 0 0 2px transparent;transition:.2s;
     }
-    .card:hover img {
-      filter: brightness(1);
-      transform: scale(1.05);
+    .search input:focus{box-shadow:0 0 0 2px rgba(0,255,255,.25)}
+
+    /* PLAYER */
+    .player-wrap{display:flex;justify-content:center}
+    .player{
+      width:100%;max-width:1000px;margin:18px auto;padding:10px 16px;
+      border:1px solid rgba(0,255,255,.25);border-radius:14px;background:rgba(17,17,17,.9);
+      box-shadow:0 12px 40px rgba(0,255,255,.10), inset 0 0 0 1px rgba(0,255,255,.08);
     }
-    .card-title {
-      position: absolute;
-      bottom: 10px;
-      left: 10px;
-      right: 10px;
-      color: #fff;
-      font-weight: bold;
-      font-size: 16px;
-      text-shadow: 0 0 5px #000;
+    .player iframe{
+      width:100%;aspect-ratio:16/9;border:0;border-radius:10px;background:#000;
+      box-shadow:0 0 0 2px rgba(0,255,255,.25);
     }
-    #episode-list button {
-      margin: 5px;
-      padding: 8px 12px;
-      border: none;
-      background: #0af;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
+    .player h2{margin:12px 4px 0;font-size:16px;color:var(--muted);font-weight:600}
+
+    /* GRID ala Netflix */
+    .grid{
+      max-width:1200px;margin:8px auto 32px;padding:0 16px;
+      display:grid;gap:16px;
+      grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
     }
-    #episode-list button:hover {
-      background: #08c;
+    @media(min-width:720px){ .grid{gap:18px;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));} }
+    @media(min-width:1024px){ .grid{gap:20px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));} }
+
+    .card{
+      position:relative;overflow:hidden;border-radius:12px;background:var(--panel);
+      border:1px solid rgba(0,255,255,.14);box-shadow:0 10px 24px rgba(0,0,0,.35);
+      transform:translateZ(0);transition:transform .2s, box-shadow .2s, border-color .2s;
+      cursor:pointer;
     }
-    video {
-      width: 90%;
-      max-width: 800px;
-      margin-top: 20px;
+    .card:hover{transform:scale(1.04);border-color:rgba(0,255,255,.35);box-shadow:0 16px 40px rgba(0,255,255,.15)}
+    .poster{width:100%;aspect-ratio:2/3;object-fit:cover;display:block}
+
+    /* Overlay info bawah poster */
+    .info{
+      position:absolute;inset:auto 0 0 0;padding:10px 10px 12px;
+      background:linear-gradient(180deg,transparent 0%, rgba(0,0,0,.65) 40%, rgba(0,0,0,.85) 100%);
+      color:#fff;
     }
-    .back {
-      display: inline-block;
-      margin: 15px;
-      color: #0af;
-      text-decoration: none;
+    .title{margin:0 0 6px;font-size:14px;font-weight:700}
+    .badges{display:flex;gap:6px;flex-wrap:wrap}
+    .badge{
+      font-size:11px;line-height:1;padding:6px 8px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.35);backdrop-filter:blur(2px)
     }
+    .badge.rating{border-color:rgba(0,255,160,.4)}
+
+    /* MODAL umum */
+    .modal{display:none;position:fixed;z-index:80;inset:0;background:rgba(0,0,0,.88);
+      align-items:center;justify-content:center;padding:16px}
+    .modal-content{
+      width:100%;max-width:420px;background:#101012;border:1px solid rgba(0,255,255,.25);
+      border-radius:14px;padding:18px;box-shadow:0 18px 60px rgba(0,255,255,.15);animation:pop .18s ease;
+      max-height:80vh;overflow-y:auto;
+    }
+    @keyframes pop{from{transform:scale(.96);opacity:.6}to{transform:scale(1);opacity:1}}
+    .modal-content h3{margin:0 0 10px;font-size:18px}
+    .modal .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .close{display:inline-block;margin-top:8px;padding:8px 12px;border-radius:10px;background:var(--danger);color:#fff;cursor:pointer}
+
+    /* List episode */
+    .episode-list a{
+      display:block;padding:10px 12px;margin:8px 0;border-radius:10px;text-decoration:none;
+      background:#17181a;color:var(--text);border:1px solid rgba(0,255,255,.2)
+    }
+    .episode-list a:hover{background:#0f1214;border-color:rgba(0,255,255,.35)}
+
+    /* Modal iklan */
+    .ad-box{display:flex;align-items:center;justify-content:center}
+    .ad-box img,.ad-box video{max-width:100%;max-height:60vh;border-radius:12px;border:1px solid rgba(0,255,255,.25)}
+
+    .hide{display:none!important}
   </style>
 </head>
 <body>
+
+  <!-- HEADER -->
   <header>
-    <h1>🎬 YudNime</h1>
-    <input type="text" id="search" placeholder="Cari anime...">
+    <div class="brand">
+      <img src="https://files.catbox.moe/eer4qt.png" alt="Logo"/>
+      <h1>[ 湯田 ] Yuda • Anime Sub Indo</h1>
+    </div>
+
+    <div class="userbar" id="userBar">
+      <!-- diisi via JS (status user, keys, tombol login/register/upgrade/logout) -->
+    </div>
   </header>
 
-  <!-- Halaman Home -->
-  <main id="home">
-    <div id="anime-list" class="anime-list"></div>
-  </main>
+  <!-- SEARCH -->
+  <div class="search">
+    <input id="searchInput" type="text" placeholder="Cari anime, genre… (misal: action, romance, school)"/>
+  </div>
 
-  <!-- Halaman Detail -->
-  <main id="detail" style="display:none; text-align:center;">
-    <a href="#" class="back" onclick="goHome()">⬅ Kembali</a>
-    <h1 id="anime-title"></h1>
-    <p id="anime-desc"></p>
-    <div id="episode-list"></div>
-    <div id="player-container"></div>
-  </main>
+  <!-- PLAYER -->
+  <div class="player-wrap">
+    <div class="player" id="playerBox">
+      <iframe id="player" src="" allow="autoplay" allowfullscreen></iframe>
+      <h2 id="judul">🎬 Pilih Anime & Episode, Dengan Kualitas -- ( 360p ~ 720p ~ 1080p )</h2>
+
+      <div style="text-align:center;margin-top:10px;">
+        😄😄😄😄😄😄😄😄😄😄
+        <p style="font-size:13px;color:#aaa;margin-top:5px;">
+          📱 DISARANKAN PUTAR LAYAR KE LANDSCAPE AGAR LEBIH NYAMAN
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRID / DAFTAR ANIME -->
+  <div class="grid" id="animeList">
+    <!-- CARD 1 -->
+    <div class="card" data-title="Our Dating Story: The Experienced You and The Inexperienced Me" data-genre="Romance, School" onclick="openModal('kak')">
+      <img class="poster" src="https://github.com/YudaTole/Data-Anime/raw/refs/heads/main/Our%20Dating%20Story_The%20Experienced%20You%20and%20The%20Inexperienced%20Me.jpeg" alt="Our Dating Story: The Experienced You and The Inexperienced Me"/>
+      <div class="info">
+        <h3 class="title">Our Dating Story: The Experienced You and The Inexperienced Me</h3>
+        <div class="badges">
+          <span class="badge">Romance</span>
+          <span class="badge">School</span>
+          <span class="badge rating">⭐ 6.76</span>
+        </div>
+        <button class="btn" onclick="event.stopPropagation();openModal('kak')">Pilih Episode</button>
+      </div>
+    </div>
+
+    <!-- CARD 2 -->
+    <div class="card" data-title="Mato Seihei No Slave" data-genre="Action, Fantasy" onclick="openModal('msns')">
+      <img class="poster" src="https://github.com/YudaTole/Data-Anime/raw/refs/heads/main/Mato%20Seihei%20no%20Slave.png" alt="Mato Seihei No Slave"/>
+      <div class="info">
+        <h3 class="title">Mato Seihei No Slave</h3>
+        <div class="badges">
+          <span class="badge">Action</span>
+          <span class="badge">Fantasy</span>
+          <span class="badge rating">⭐ 6.85</span>
+        </div>
+        <button class="btn" onclick="event.stopPropagation();openModal('msns')">Pilih Episode</button>
+      </div>
+    </div>
+
+    <!-- CARD 3 -->
+    <div class="card" data-title="The Angel Next Door Spoils Me Rotten" data-genre="School, Romance" onclick="openModal('tan')">
+      <img class="poster" src="https://github.com/YudaTole/Data-Anime/raw/refs/heads/main/The%20Angel%20Next%20Door%20Spoils%20Me%20Rotten.jpg" alt="The Angel Next Door Spoils Me Rotten"/>
+      <div class="info">
+        <h3 class="title">The Angel Next Door Spoils Me Rotten</h3>
+        <div class="badges">
+          <span class="badge">School</span>
+          <span class="badge">Romance</span>
+          <span class="badge rating">⭐ 7.85</span>
+        </div>
+        <button class="btn" onclick="event.stopPropagation();openModal('tan')">Pilih Episode</button>
+      </div>
+    </div>
+
+    <!-- CARD 4 -->
+    <div class="card" data-title="The Aristocrat's Otherworldly Adventure: Serving Gods Who Go Too Far" data-genre="Action, Isekai" onclick="openModal('tao')">
+      <img class="poster" src="https://github.com/YudaTole/Data-Anime/raw/refs/heads/main/The%20Aristocrat's%20Otherworldly%20Adventure%20Serving%20Gods%20Who%20Go%20Too%20Far.png" alt="The Aristocrat's Otherworldly Adventure: Serving Gods Who Go Too Far"/>
+      <div class="info">
+        <h3 class="title">The Aristocrat's Otherworldly Adventure: Serving Gods Who Go Too Far</h3>
+        <div class="badges">
+          <span class="badge">Action</span>
+          <span class="badge">Isekai</span>
+          <span class="badge rating">⭐ 6.68</span>
+        </div>
+        <button class="btn" onclick="event.stopPropagation();openModal('tao')">Pilih Episode</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================== MODALS ================== -->
+
+  <!-- LOGIN / REGISTER -->
+  <div id="modal-auth" class="modal">
+    <div class="modal-content">
+      <h3 id="authTitle">Masuk / Daftar</h3>
+      <div>
+        <label>Username</label>
+        <input id="authUser" style="width:100%;margin-top:6px;padding:10px;border-radius:10px;border:1px solid rgba(0,255,255,.25);background:#0f1112;color:#fff" placeholder="mis: yuda">
+      </div>
+      <div style="margin-top:10px">
+        <label>Password</label>
+        <input id="authPass" type="password" style="width:100%;margin-top:6px;padding:10px;border-radius:10px;border:1px solid rgba(0,255,255,.25);background:#0f1112;color:#fff" placeholder="••••••">
+      </div>
+      <div class="actions" style="margin-top:12px">
+        <button class="btn" onclick="doLogin()">Login</button>
+        <button class="btn outline" onclick="doRegister()">Register</button>
+        <div class="close" onclick="closeModal('auth')">Tutup</div>
+      </div>
+      <p style="color:#aab; font-size:12px; margin-top:6px;">* Demo: akun disimpan di perangkat ini (localStorage).</p>
+    </div>
+  </div>
+
+  <!-- PILIHAN JIKA KUNCI HABIS (BASIC) -->
+  <div id="modal-need-keys" class="modal">
+    <div class="modal-content">
+      <h3>Kunci kamu habis</h3>
+      <p style="margin:8px 0 12px;color:#a7e7e7">Pilih salah satu:</p>
+      <div class="actions">
+        <button class="btn" onclick="watchAdForKeys()">Tonton Iklan (+3 kunci)</button>
+        <button class="btn success" onclick="openModal('upgrade')">Upgrade Premium (unlimited)</button>
+      </div>
+      <div class="close" onclick="closeModal('need-keys')">Tutup</div>
+    </div>
+  </div>
+
+  <!-- UPGRADE PREMIUM (SIMULASI) -->
+  <div id="modal-upgrade" class="modal">
+    <div class="modal-content">
+      <h3>Upgrade ke Premium</h3>
+      <p style="margin:6px 0 10px;color:#a7e7e7">Pilih metode (simulasi, tanpa pembayaran):</p>
+      <div class="actions">
+        <button class="btn">Dana</button>
+        <button class="btn">OVO</button>
+        <button class="btn">Gopay</button>
+        <button class="btn">QRIS</button>
+      </div>
+      <div class="actions" style="margin-top:10px">
+        <button class="btn success" onclick="confirmUpgrade()">Konfirmasi Upgrade</button>
+        <div class="close" onclick="closeModal('upgrade')">Batal</div>
+      </div>
+      <p style="color:#aab; font-size:12px; margin-top:6px;">* Demo: tombol ini langsung mengubah status ke Premium.</p>
+    </div>
+  </div>
+
+  <!-- MODAL IKLAN (RANDOM FOTO/VIDEO) -->
+  <div id="modal-ad" class="modal">
+    <div class="modal-content">
+      <h3>Iklan</h3>
+      <div id="adBox" class="ad-box" style="margin-top:8px"></div>
+      <p id="adHint" style="color:#aab; font-size:12px; margin-top:8px;text-align:center"></p>
+      <div class="actions" id="adActions" style="justify-content:center"></div>
+    </div>
+  </div>
+
+
+  <!-- ================== MODALS EPISODE ================== -->
+
+  <!-- Our Dating Story -->
+  <div id="modal-kak" class="modal">
+    <div class="modal-content">
+      <h3>Our Dating Story</h3>
+      <div class="episode-list">
+        <a onclick="requestPlay('https://drive.google.com/file/d/1Cdk5BaA8d2-_6OosH4XqIJJyf3Qml6v_/preview','Our Dating Story - Episode 1')">Episode 1</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1GpndMciylAVXFVRyVEH0lgkI4AoHGvq3/preview','Our Dating Story - Episode 2')">Episode 2</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1Gzj3_-Xu2zuXvWJI2RzofPxCPwokSQzV/preview','Our Dating Story - Episode 3')">Episode 3</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1Gyqbeft3rUjvtdyHKDtxALm7QwO2fasQ/preview','Our Dating Story - Episode 4')">Episode 4</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1GwOSwm-c5AdJkYalF8p_GnOYl0YK1c2i/preview','Our Dating Story - Episode 5')">Episode 5</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1GqFq5C2ZcsmPFrAtubQNmpcffTNQ-rI9/preview','Our Dating Story - Episode 6')">Episode 6</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1HE3MwS12pNnszIMyeI2fEhppI_KQGLpa/preview','Our Dating Story - Episode 7')">Episode 7</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1H3-e86mr7tYa6OuaD719SksAWUwSEQ2h/preview','Our Dating Story - Episode 8')">Episode 8</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1H0BOZ9tVzB3_o3-gxhJ0zG3ZbOxRQvR3/preview','Our Dating Story - Episode 9')">Episode 9</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1H-mJREK2OFnKcWi0W6B7fe_iHQQUVAzq/preview','Our Dating Story - Episode 10')">Episode 10</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1HMbQbbrkY3MxQJdNx89yds0ubjq455l4/preview','Our Dating Story - Episode 11')">Episode 11</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1HERsLkKHtm4A1v57V4DTOg1ztMk7o0E3/preview','Our Dating Story - Episode 12 END')">Episode 12 END</a>
+      </div>
+      <div class="close" onclick="closeModal('kak')">Tutup</div>
+    </div>
+  </div>
+
+  <!-- MATO SEIHEI NO SLAVE -->
+  <div id="modal-msns" class="modal">
+    <div class="modal-content">
+      <h3>Mato Seihei No Slave</h3>
+      <div class="episode-list">
+        <a onclick="requestPlay('https://drive.google.com/file/d/1FFgrhfvhiqzzCZu1wdSbLs9YpKXIi5Dp/preview','Mato Seihei No Slave - Episode 1')">Episode 1</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1FduwoMcwWSr5by54TXuVQKgGg2T5UVcV/preview','Mato Seihei No Slave - Episode 2')">Episode 2</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1FeMw5GZy5ChuROR8zQwQlm0MP_mOf664/preview','Mato Seihei No Slave - Episode 3')">Episode 3</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1FmKGtB8MLKjcwSPm9beorBu2JX9yuZSX/preview','Mato Seihei No Slave - Episode 4')">Episode 4</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1Fk1-JgF_JbCRaMbPYjhUnDDkFhRZz_Y7/preview','Mato Seihei No Slave - Episode 5')">Episode 5</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1FoFAAkhc89XShCv77avQzrTsT2JHxB8B/preview','Mato Seihei No Slave - Episode 6')">Episode 6</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1GE_jjyAuNgYMRbsyGwHbQ02J-60Z6ygh/preview','Mato Seihei No Slave - Episode 7')">Episode 7</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1GM0-KIs5CTCXnOmN2iLBt5IhIMds_KgW/preview','Mato Seihei No Slave - Episode 8')">Episode 8</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1GEtXX4z2gDGK99y4ehKoBZuCHsgipMHX/preview','Mato Seihei No Slave - Episode 9')">Episode 9</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1FMbxzvAgkAitpvAPBxRfs5DCUsDwmCWP/preview','Mato Seihei No Slave - Episode 10')">Episode 10</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1FWIyR6QlEhMEZGvKgg5t7WLAt3-Qxi40/preview','Mato Seihei No Slave - Episode 11')">Episode 11</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1FZt7Ohfg3crWUhrbkWlxHP8h0nxpYRFO/preview','Mato Seihei No Slave - Episode 12 END')">Episode 12 END</a>
+      </div>
+      <div class="close" onclick="closeModal('msns')">Tutup</div>
+    </div>
+  </div>
+
+  <!-- The Angel Next Door -->
+  <div id="modal-tan" class="modal">
+    <div class="modal-content">
+      <h3>The Angel Next Door Spoils Me Rotten</h3>
+      <div class="episode-list">
+        <a onclick="requestPlay('https://drive.google.com/file/d/1DpWAoii9JpYAhSKJ1K9qHLoX1bLbCbdx/preview','The Angel Next Door - Episode 1')">Episode 1</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1DudGAaSx8WFewCrhihw8xvbD8wgdzO2_/preview','The Angel Next Door - Episode 2')">Episode 2</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1Eml3iSTc3rzUwozNi0f-p4XsVPDik0qp/preview','The Angel Next Door - Episode 3')">Episode 3</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1EKJ1k-6n7jyAnhDMT4MGFukxiA_rBKTb/preview','The Angel Next Door - Episode 4')">Episode 4</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1EhOE7sIxTV-bcApOou1cUZltY1FTSbZC/preview','The Angel Next Door - Episode 5')">Episode 5</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1DxuRnp10cT3DVkR1UjF2H4EEZyp-s_97/preview','The Angel Next Door - Episode 6')">Episode 6</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1E3GD5b5BxaEGI105b2j2xrcPmpIdpA-n/preview','The Angel Next Door - Episode 7')">Episode 7</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1EHYhJsTF2gg3bNCtMLq93pI1DZYpmbaX/preview','The Angel Next Door - Episode 8')">Episode 8</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1EL4EQ8pn5yrPWD-KvOY0kNYK0UGq97o9/preview','The Angel Next Door - Episode 9')">Episode 9</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1EeQAZZB_tGCcja--d_r4OE84lW7ra0dy/preview','The Angel Next Door - Episode 10')">Episode 10</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1EgMIPHTz6YmI5lMPcydbahPyVMeqRSLB/preview','The Angel Next Door - Episode 11')">Episode 11</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1EiKrpgumy30mrE2UM3T_d8TmdCvXFvjQ/preview','The Angel Next Door - Episode 12 END')">Episode 12 END</a>
+      </div>
+      <div class="close" onclick="closeModal('tan')">Tutup</div>
+    </div>
+  </div>
+
+  <!-- The Aristocrat's Otherworldly Adventure -->
+  <div id="modal-tao" class="modal">
+    <div class="modal-content">
+      <h3>The Aristocrat's Otherworldly Adventure</h3>
+      <div class="episode-list">
+        <a onclick="requestPlay('https://drive.google.com/file/d/1GkwVOgH1uPoI3Aj9Rbxp2lw03-864x93/preview','Aristocrat Adventure - Episode 1')">Episode 1</a>
+        <a onclick="requestPlay('https://drive.google.com/file/d/1GislNP02kfeIG9vOpnlMdF45pr-Etz5W/preview','Aristocrat Adventure - Episode 2')">Episode 2</a>
+      </div>
+      <div class="close" onclick="closeModal('tao')">Tutup</div>
+    </div>
+  </div>
 
   <script>
-    // ====== Converter Google Drive ======
-    function convertDriveLink(url) {
-      const match = url.match(/\/d\/(.+?)\//);
-      if (match) {
-        return `https://drive.google.com/uc?export=download&id=${match[1]}`;
-      }
-      return url; // fallback jika bukan link drive
+    /* =========================
+       UTIL & STORAGE
+       ========================= */
+    const LS_USERS = "oy_users";      // map username -> {password, role, keys}
+    const LS_USER  = "oy_currentUser"; // string username yang sedang login
+
+    function getUsers(){
+      return JSON.parse(localStorage.getItem(LS_USERS) || "{}");
+    }
+    function setUsers(obj){
+      localStorage.setItem(LS_USERS, JSON.stringify(obj));
+    }
+    function getCurrentUsername(){
+      return localStorage.getItem(LS_USER) || null;
+    }
+    function setCurrentUsername(u){
+      if(u) localStorage.setItem(LS_USER, u); else localStorage.removeItem(LS_USER);
+    }
+    function getCurrentUserObj(){
+      const u = getCurrentUsername(); if(!u) return null;
+      const users = getUsers(); return users[u] || null;
+    }
+    function saveCurrentUserObj(updater){
+      const u = getCurrentUsername(); if(!u) return;
+      const users = getUsers();
+      users[u] = updater(users[u]);
+      setUsers(users);
+      renderUserBar();
     }
 
-    // ====== Data Anime ======
-    const animeData = [
-      {
-        id: "msns",
-        title: "MATO SEIHEI NO SLAVE",
-        desc: "Seorang ninja muda bercita-cita jadi Hokage.",
-        image: "https://github.com/YudaTole/Data-Anime/raw/refs/heads/main/Mato%20Seihei%20no%20Slave.png",
-        episodes: [
-          { 
-            title: "Episode 1", 
-            url: convertDriveLink("https://files.catbox.moe/470kl7.mp4") 
-          },
-          { 
-            title: "Episode 2", 
-            url: convertDriveLink("https://files.catbox.moe/470kl7.mp4") 
-          }
-        ]
-      },
-      {
-        id: "kak",
-        title: "KISAH ASMARA KITA",
-        desc: "Petualangan Luffy dan kru Topi Jerami mencari One Piece.",
-        image: "https://github.com/YudaTole/Data-Anime/raw/refs/heads/main/Our%20Dating%20Story_The%20Experienced%20You%20and%20The%20Inexperienced%20Me.jpeg",
-        episodes: [
-          { 
-            title: "Episode 1", 
-            url: convertDriveLink("https://files.catbox.moe/470kl7.mp4") 
-          },
-          { 
-            title: "Episode 2", 
-            url: convertDriveLink("https://files.catbox.moe/470kl7.mp4") 
-          }
-        ]
+    /* =========================
+       AUTH (LOGIN / REGISTER)
+       ========================= */
+    function openModal(id){ document.getElementById('modal-'+id).style.display='flex'; }
+    function closeModal(id){ document.getElementById('modal-'+id).style.display='none'; }
+
+    function openAuth(){ openModal('auth'); }
+    function doLogin(){
+      const uname = document.getElementById('authUser').value.trim();
+      const pass  = document.getElementById('authPass').value;
+      const users = getUsers();
+      if(!users[uname]){ alert("Akun tidak ditemukan. Silakan register."); return; }
+      if(users[uname].password !== pass){ alert("Password salah."); return; }
+      setCurrentUsername(uname);
+      closeModal('auth');
+      renderUserBar();
+      alert("Login berhasil. Selamat datang, " + uname + "!");
+    }
+    function doRegister(){
+      const uname = document.getElementById('authUser').value.trim();
+      const pass  = document.getElementById('authPass').value;
+      if(!uname || !pass){ alert("Username & Password wajib diisi."); return; }
+      const users = getUsers();
+      if(users[uname]){ alert("Username sudah dipakai. Coba yang lain."); return; }
+      users[uname] = { password: pass, role: "basic", keys: 3 }; // user baru: basic & 3 kunci awal
+      setUsers(users);
+      setCurrentUsername(uname);
+      closeModal('auth');
+      renderUserBar();
+      alert("Register berhasil. Kamu mendapat 3 kunci.");
+    }
+    function logout(){
+      setCurrentUsername(null);
+      renderUserBar();
+    }
+
+    function renderUserBar(){
+      const bar = document.getElementById('userBar');
+      const u = getCurrentUserObj();
+      if(!u){
+        bar.innerHTML = `
+          <span class="pill">Belum login</span>
+          <button class="btn outline" onclick="openAuth()">Login / Register</button>
+        `;
+        return;
       }
+      const username = getCurrentUsername();
+      const role = u.role;
+      const keys = u.keys ?? 0;
+      bar.innerHTML = `
+        <span class="pill">👤 ${username}</span>
+        <span class="pill">${role === 'premium' ? '🌟 Premium' : '🔑 Basic'}</span>
+        ${role === 'premium' ? '' : `<span class="pill">Kunci: ${keys}</span>`}
+        ${role === 'premium' ? '' : `<button class="btn success" onclick="openModal('upgrade')">Upgrade</button>`}
+        <button class="btn danger" onclick="logout()">Logout</button>
+      `;
+    }
+
+    /* =========================
+       ADs RANDOM
+       ========================= */
+    const ADS = [
+      // Foto iklan
+      "https://github.com/YudaTole/Data-Anime/raw/refs/heads/main/The%20Aristocrat's%20Otherworldly%20Adventure%20Serving%20Gods%20Who%20Go%20Too%20Far.png",
+      // Video iklan
+      "https://github.com/YudaTole/My-video/raw/refs/heads/main/Animals%20%F0%9F%A5%B6.mp4"
     ];
 
-    const listContainer = document.getElementById("anime-list");
-    const searchInput = document.getElementById("search");
-    const homePage = document.getElementById("home");
-    const detailPage = document.getElementById("detail");
+    function watchAdForKeys(onDone){
+      // Tampilkan modal iklan dengan konten random
+      const adBox = document.getElementById('adBox');
+      const adHint = document.getElementById('adHint');
+      const adActions = document.getElementById('adActions');
+      adBox.innerHTML = '';
+      adActions.innerHTML = '';
+      adHint.textContent = '';
 
-    // ====== Render Daftar Anime ======
-    function renderList(keyword = "") {
-      listContainer.innerHTML = "";
-      animeData
-        .filter(a => a.title.toLowerCase().includes(keyword.toLowerCase()))
-        .forEach(anime => {
-          const card = document.createElement("div");
-          card.className = "card";
-          card.innerHTML = `
-            <img src="${anime.image}" alt="${anime.title}">
-            <div class="card-title">${anime.title}</div>
-            <a href="#" onclick="openAnime('${anime.id}')" style="position:absolute;top:0;left:0;right:0;bottom:0;"></a>
-          `;
-          listContainer.appendChild(card);
-        });
+      const idx = Math.floor(Math.random()*ADS.length);
+      const url = ADS[idx];
+
+      openModal('ad');
+
+      if(url.endsWith('.mp4')){
+        const v = document.createElement('video');
+        v.src = url; v.controls = true; v.autoplay = true; v.playsInline = true;
+        adBox.appendChild(v);
+        adHint.textContent = 'Tonton sampai selesai untuk mendapatkan +3 kunci.';
+        v.onended = () => {
+          closeModal('ad');
+          grantKeys(3);
+          if(onDone) onDone();
+          alert('Mantap! Kamu mendapatkan +3 kunci.');
+        };
+      }else{
+        const img = document.createElement('img');
+        img.src = url;
+        adBox.appendChild(img);
+        adHint.textContent = 'Tap tombol di bawah untuk menutup iklan dan klaim +3 kunci.';
+        const ok = document.createElement('button');
+        ok.className = 'btn';
+        ok.textContent = 'Tutup Iklan & Klaim +3 Kunci';
+        ok.onclick = () => {
+          closeModal('ad');
+          grantKeys(3);
+          if(onDone) onDone();
+          alert('Mantap! Kamu mendapatkan +3 kunci.');
+        };
+        adActions.appendChild(ok);
+      }
     }
 
-    // ====== Buka Detail Anime ======
-    function openAnime(id) {
-      const anime = animeData.find(a => a.id === id);
-      if (!anime) return;
+    function grantKeys(n){
+      const u = getCurrentUserObj(); if(!u) return;
+      saveCurrentUserObj(prev => ({...prev, keys: (prev.keys||0) + n}));
+    }
 
-      homePage.style.display = "none";
-      detailPage.style.display = "block";
+    function consumeKeyIfBasic(){
+      const u = getCurrentUserObj(); if(!u) return false;
+      if(u.role === 'premium') return true;
+      const k = u.keys || 0;
+      if(k <= 0) return false;
+      saveCurrentUserObj(prev => ({...prev, keys: (prev.keys||0) - 1}));
+      return true;
+    }
 
-      document.getElementById("anime-title").textContent = anime.title;
-      document.getElementById("anime-desc").textContent = anime.desc;
+    function confirmUpgrade(){
+      const u = getCurrentUserObj(); if(!u){ alert('Silakan login dulu.'); return; }
+      saveCurrentUserObj(prev => ({...prev, role:'premium'}));
+      closeModal('upgrade');
+      alert('Selamat! Akunmu sekarang Premium (unlimited).');
+    }
 
-      const episodeList = document.getElementById("episode-list");
-      episodeList.innerHTML = "";
-      document.getElementById("player-container").innerHTML = "";
+    /* =========================
+       PLAYER & EPISODE FLOW
+       ========================= */
+    function gantiEpisode(link, judul){
+      const player   = document.getElementById('player');
+      const titleEl  = document.getElementById('judul');
+      player.src = link;
+      titleEl.textContent = '🎬 ' + judul;
+      document.querySelectorAll('.modal').forEach(m=>m.style.display='none');
+      document.querySelector('.player').scrollIntoView({behavior:'smooth', block:'start'});
+    }
 
-      anime.episodes.forEach(ep => {
-        const btn = document.createElement("button");
-        btn.textContent = ep.title;
-        btn.onclick = () => {
-          const player = document.getElementById("player-container");
-          player.innerHTML = `
-            <h2>${ep.title}</h2>
-            <video controls autoplay>
-              <source src="${ep.url}" type="video/mp4">
-              Browser tidak mendukung video.
-            </video>
-          `;
-        };
-        episodeList.appendChild(btn);
+    // Flow baru: klik episode -> cek login + keys/role
+    function requestPlay(link, judul){
+      const user = getCurrentUserObj();
+      if(!user){ openAuth(); return; }
+
+      if(user.role === 'premium'){
+        gantiEpisode(link, judul);
+        return;
+      }
+
+      // BASIC: butuh kunci
+      if((user.keys||0) <= 0){
+        // tampilkan modal pilihan
+        openModal('need-keys');
+        // simpan intent supaya setelah dapat kunci bisa lanjut
+        pendingPlay = { link, judul };
+        return;
+      }
+
+      // masih punya kunci -> pakai 1
+      if(consumeKeyIfBasic()){
+        gantiEpisode(link, judul);
+      }else{
+        openModal('need-keys');
+        pendingPlay = { link, judul };
+      }
+    }
+
+    let pendingPlay = null; // menyimpan episode yang ingin diputar saat kunci habis
+
+    // tombol "Tonton Iklan (+3 kunci)" di modal kunci
+    function watchAdForKeysAndContinue(){
+      watchAdForKeys(()=> {
+        closeModal('need-keys');
+        if(pendingPlay){
+          // setelah dapat kunci, langsung konsumsi & play
+          if(consumeKeyIfBasic()){
+            gantiEpisode(pendingPlay.link, pendingPlay.judul);
+            pendingPlay = null;
+          }
+        }
       });
     }
-
-    // ====== Kembali ke Home ======
-    function goHome() {
-      detailPage.style.display = "none";
-      homePage.style.display = "block";
+    // sambungkan tombol di modal need-keys
+    const needKeysModal = document.getElementById('modal-need-keys');
+    if(needKeysModal){
+      // override tombol default agar pakai flow continue
+      needKeysModal.querySelector('.btn').onclick = watchAdForKeysAndContinue;
     }
 
-    // ====== Search ======
-    searchInput.addEventListener("input", () => {
-      renderList(searchInput.value);
+    // Modal open/close untuk daftar anime
+    function openModal(id){ document.getElementById('modal-'+id).style.display='flex'; }
+    function closeModal(id){ document.getElementById('modal-'+id).style.display='none'; }
+
+    // Search by title/genre
+    document.getElementById('searchInput').addEventListener('input', function(){
+      const q = this.value.trim().toLowerCase();
+      document.querySelectorAll('#animeList .card').forEach(card=>{
+        const title = (card.dataset.title||'').toLowerCase();
+        const genre = (card.dataset.genre||'').toLowerCase();
+        card.classList.toggle('hide', !(title.includes(q) || genre.includes(q)));
+      });
     });
 
-    // Render awal
-    renderList();
+    // Init
+    renderUserBar();
   </script>
 </body>
 </html>
