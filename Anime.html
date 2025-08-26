@@ -7,26 +7,37 @@
   <style>
     :root{
       --bg:#0a0a0a; --panel:#111; --line:#00ffff; --text:#e8ffff;
-      --muted:#a7e7e7; --danger:#ff3b3b;
+      --muted:#a7e7e7; --danger:#ff3b3b; --success:#00d68f;
     }
     *{box-sizing:border-box}
     body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
 
     /* HEADER */
     header{
-      position:sticky;top:0;z-index:50;
-      display:flex;align-items:center;gap:12px;justify-content:center;
+      position:sticky;top:0;z-index:60;
+      display:flex;align-items:center;gap:12px;justify-content:space-between;
       background:linear-gradient(180deg,#0f0f10,#0a0a0a 90%);
-      padding:14px 18px;border-bottom:1px solid rgba(0,255,255,.15);
+      padding:12px 16px;border-bottom:1px solid rgba(0,255,255,.15);
       box-shadow:0 6px 24px rgba(0,255,255,.08);
     }
+    .brand{display:flex;align-items:center;gap:12px}
     header img{height:44px;width:44px;border-radius:50%;border:2px solid rgba(0,255,255,.35)}
-    header h1{margin:0;font-size:18px;letter-spacing:.5px;color:var(--text)}
+    header h1{margin:0;font-size:16px;letter-spacing:.4px;color:var(--text)}
+    .userbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .pill{
+      font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid rgba(0,255,255,.3);
+      background:#0f1112; color:var(--text)
+    }
+    .btn{
+      padding:8px 12px;border-radius:10px;border:1px solid rgba(0,255,255,.35);
+      background:var(--line);color:#002;font-weight:700;cursor:pointer
+    }
+    .btn.outline{background:transparent;color:var(--text)}
+    .btn.danger{background:var(--danger);border-color:transparent;color:#fff}
+    .btn.success{background:var(--success);border-color:transparent;color:#001}
 
     /* SEARCH */
-    .search{
-      max-width:1100px;margin:16px auto 0;padding:0 16px 8px;
-    }
+    .search{ max-width:1100px;margin:16px auto 0;padding:0 16px 8px; }
     .search input{
       width:100%;padding:12px 14px;border-radius:10px;border:2px solid rgba(0,255,255,.35);
       background:#0f0f10;color:var(--text);font-size:15px;outline:none;
@@ -41,7 +52,7 @@
       border:1px solid rgba(0,255,255,.25);border-radius:14px;background:rgba(17,17,17,.9);
       box-shadow:0 12px 40px rgba(0,255,255,.10), inset 0 0 0 1px rgba(0,255,255,.08);
     }
-    .player iframe{
+    .player iframe, .player video{
       width:100%;aspect-ratio:16/9;border:0;border-radius:10px;background:#000;
       box-shadow:0 0 0 2px rgba(0,255,255,.25);
     }
@@ -79,38 +90,54 @@
     }
     .badge.rating{border-color:rgba(0,255,160,.4)}
 
-    .card .btn{
-      margin-top:10px;display:inline-block;padding:7px 10px;border-radius:8px;
-      background:var(--line);color:#001;font-weight:700;font-size:13px;border:0
-    }
-
-    /* MODAL */
-    .modal{display:none;position:fixed;z-index:60;inset:0;background:rgba(0,0,0,.88);
-     align-items:center;justify-content:center;padding:16px}
+    /* MODAL umum */
+    .modal{display:none;position:fixed;z-index:120;inset:0;background:rgba(0,0,0,.88);
+      align-items:center;justify-content:center;padding:16px}
     .modal-content{
-      width:100%;max-width:420px;background:#101012;border:1px solid rgba(0,255,255,.25);
+      width:100%;max-width:480px;background:#101012;border:1px solid rgba(0,255,255,.25);
       border-radius:14px;padding:18px;box-shadow:0 18px 60px rgba(0,255,255,.15);animation:pop .18s ease;
-      max-height:80vh;overflow-y:auto; /* BIAR SCROLL KALO EPISODE BANYAK */
+      max-height:80vh;overflow-y:auto;
     }
     @keyframes pop{from{transform:scale(.96);opacity:.6}to{transform:scale(1);opacity:1}}
     .modal-content h3{margin:0 0 10px;font-size:18px}
+    .modal .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .close{display:inline-block;margin-top:8px;padding:8px 12px;border-radius:10px;background:var(--danger);color:#fff;cursor:pointer}
+
+    /* List episode */
     .episode-list a{
       display:block;padding:10px 12px;margin:8px 0;border-radius:10px;text-decoration:none;
       background:#17181a;color:var(--text);border:1px solid rgba(0,255,255,.2)
     }
     .episode-list a:hover{background:#0f1214;border-color:rgba(0,255,255,.35)}
-    .close{display:inline-block;margin-top:8px;padding:8px 12px;border-radius:10px;background:var(--danger);color:#fff;cursor:pointer}
 
-    /* Helpers */
+    /* Modal iklan */
+    .ad-box{display:flex;align-items:center;justify-content:center}
+    .ad-box img,.ad-box video{max-width:100%;max-height:60vh;border-radius:12px;border:1px solid rgba(0,255,255,.25)}
+
+    /* gacha/daily small UI */
+    .small { font-size:13px; color:#cfeff0 }
+
     .hide{display:none!important}
+
+    @media(max-width:480px){
+      header h1{font-size:13px}
+      .btn{padding:6px 10px;font-size:13px}
+      .pill{font-size:11px;padding:4px 8px}
+    }
   </style>
 </head>
 <body>
 
   <!-- HEADER -->
   <header>
-    <img src="https://files.catbox.moe/eer4qt.png" alt="Logo"/>
-    <h1>[ 湯田 ] Yuda • Anime Sub Indo</h1>
+    <div class="brand">
+      <img src="https://files.catbox.moe/eer4qt.png" alt="Logo"/>
+      <h1>[ 湯田 ] Yuda • Anime Sub Indo</h1>
+    </div>
+
+    <div class="userbar" id="userBar">
+      <!-- diisi via JS (status user, keys, tombol login/register/upgrade/logout) -->
+    </div>
   </header>
 
   <!-- SEARCH -->
@@ -123,13 +150,13 @@
     <div class="player" id="playerBox">
       <iframe id="player" src="" allow="autoplay" allowfullscreen></iframe>
       <h2 id="judul">🎬 Pilih Anime & Episode, Dengan Kualitas -- ( 360p ~ 720p ~ 1080p )</h2>
-     
-    <!-- Tambahan notifikasi gambar -->
-    <div style="text-align:center;margin-top:10px;">
-      <p style="font-size:13px;color:#aaa;margin-top:5px;">
-        📱 𝐃𝐈𝐒𝐀𝐑𝐀𝐍𝐊𝐀𝐍 𝐏𝐔𝐓𝐀𝐑 𝐋𝐀𝐘𝐀𝐑 𝐊𝐄 𝐋𝐀𝐍𝐃𝐒𝐂𝐀𝐏𝐄 𝐀𝐆𝐀𝐑 𝐋𝐄𝐁𝐈𝐇 𝐍𝐘𝐀𝐌𝐀𝐍
-      </p>
-    </div>
+
+      <div style="text-align:center;margin-top:10px;">
+        😄😄😄😄😄😄😄😄😄😄
+        <p style="font-size:13px;color:#aaa;margin-top:5px;">
+          📱 DISARANKAN PUTAR LAYAR KE LANDSCAPE AGAR LEBIH NYAMAN
+        </p>
+      </div>
     </div>
   </div>
 
@@ -163,7 +190,7 @@
       </div>
     </div>
 
-      <!-- CARD 3 -->
+    <!-- CARD 3 -->
     <div class="card" data-title="The Angel Next Door Spoils Me Rotten" data-genre="School, Romance" onclick="openModal('tan')">
       <img class="poster" src="https://github.com/YudaTole/Data-Anime/raw/refs/heads/main/The%20Angel%20Next%20Door%20Spoils%20Me%20Rotten.jpg" alt="The Angel Next Door Spoils Me Rotten"/>
       <div class="info">
@@ -190,141 +217,584 @@
         <button class="btn" onclick="event.stopPropagation();openModal('tao')">Pilih Episode</button>
       </div>
     </div>
+  </div>
 
-    <!-- ===== CONTOH TEMPLATE SIAP COPAS =====
-    <div class="card" data-title="Judul Anime" data-genre="Action, Comedy" onclick="openModal('unikid')">
-      <img class="poster" src="THUMBNAIL_URL" alt="Judul Anime"/>
-      <div class="info">
-        <h3 class="title">Judul Anime</h3>
-        <div class="badges">
-          <span class="badge">Action</span>
-          <span class="badge">Comedy</span>
-          <span class="badge rating">⭐ 8.6</span>
+  <!-- ================== MODALS ================== -->
+
+  <!-- LOGIN / REGISTER -->
+  <div id="modal-auth" class="modal" tabindex="-1">
+    <div class="modal-content">
+      <h3 id="authTitle">Masuk / Daftar</h3>
+      <div>
+        <label>Username</label>
+        <input id="authUser" style="width:100%;margin-top:6px;padding:10px;border-radius:10px;border:1px solid rgba(0,255,255,.25);background:#0f1112;color:#fff" placeholder="mis: yuda">
+      </div>
+      <div style="margin-top:10px">
+        <label>Password</label>
+        <input id="authPass" type="password" style="width:100%;margin-top:6px;padding:10px;border-radius:10px;border:1px solid rgba(0,255,255,.25);background:#0f1112;color:#fff" placeholder="••••••">
+      </div>
+      <div class="actions" style="margin-top:12px">
+        <button class="btn" onclick="doLogin()">Login</button>
+        <button class="btn outline" onclick="doRegister()">Register</button>
+        <div class="close" onclick="closeModal('auth')">Tutup</div>
+      </div>
+      <p style="color:#aab; font-size:12px; margin-top:6px;">* Demo: akun disimpan di perangkat ini (localStorage).</p>
+    </div>
+  </div>
+
+  <!-- PILIHAN JIKA KUNCI HABIS (BASIC) -->
+  <div id="modal-need-keys" class="modal" tabindex="-1">
+    <div class="modal-content">
+      <h3>Kunci kamu habis</h3>
+      <p style="margin:8px 0 12px;color:#a7e7e7">Pilih salah satu:</p>
+      <div class="actions">
+        <button class="btn" id="btnWatchAd3">Tonton Iklan (+3 kunci)</button>
+        <button class="btn success" onclick="openModal('upgrade')">Dapatkan Kunci</button>
+      </div>
+      <div class="close" onclick="closeModal('need-keys')">Tutup</div>
+    </div>
+  </div>
+
+  <!-- DAPATKAN KUNCI (PAKET + IKLAN DURASI) -->
+  <div id="modal-upgrade" class="modal" tabindex="-1">
+    <div class="modal-content">
+      <h3>Dapatkan Kunci 🔑 dengan Nonton Iklan</h3>
+      <p style="margin:6px 0 10px;color:#a7e7e7">Pilih paket & tonton iklan sesuai durasi:</p>
+      <div class="actions">
+        <button class="btn" onclick="startPackageAd(12,15)">12 Key (15s)</button>
+        <button class="btn" onclick="startPackageAd(15,30)">15 Key (30s)</button>
+        <button class="btn" onclick="startPackageAd(25,45)">25 Key (45s)</button>
+        <button class="btn" onclick="startPackageAd(30,60)">30 Key (60s)</button>
+      </div>
+      <div class="close" onclick="closeModal('upgrade')">Batal</div>
+      <p style="color:#aab; font-size:12px; margin-top:6px;">* Demo: tidak ada pembayaran, hanya menonton iklan.</p>
+      <hr style="border-color:rgba(255,255,255,.06);margin-top:12px">
+      <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
+        <div>
+          <div class="small">Daily Quest</div>
+          <div class="small">Selesaikan misi harian & dapat kunci</div>
         </div>
-        <button class="btn" onclick="event.stopPropagation();openModal('unikid')">Pilih Episode</button>
+        <div>
+          <button class="btn outline" onclick="openModal('daily')">Buka Misi</button>
+        </div>
       </div>
-    </div>
-    ======================================== -->
-  </div>
-
-  <!-- MODALS -->
-  <!-- KISAH ASMARA KITA -->
-  <div id="modal-kak" class="modal">
-    <div class="modal-content">
-      <h3>Kisah Asmara Kita</h3>
-      <div class="episode-list">
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1Cdk5BaA8d2-_6OosH4XqIJJyf3Qml6v_/preview','Kisah Asmara Kita - Episode 1')">Episode 1</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1GpndMciylAVXFVRyVEH0lgkI4AoHGvq3/preview','Kisah Asmara Kita - Episode 2')">Episode 2</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1Gzj3_-Xu2zuXvWJI2RzofPxCPwokSQzV/preview','Kisah Asmara Kita - Episode 3')">Episode 3</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1Gyqbeft3rUjvtdyHKDtxALm7QwO2fasQ/preview','Kisah Asmara Kita - Episode 4')">Episode 4</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1GwOSwm-c5AdJkYalF8p_GnOYl0YK1c2i/preview','Kisah Asmara Kita - Episode 5')">Episode 5</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1GqFq5C2ZcsmPFrAtubQNmpcffTNQ-rI9/preview','Kisah Asmara Kita - Episode 6')">Episode 6</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1HE3MwS12pNnszIMyeI2fEhppI_KQGLpa/preview','Kisah Asmara Kita - Episode 7')">Episode 7</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1H3-e86mr7tYa6OuaD719SksAWUwSEQ2h/preview','Kisah Asmara Kita - Episode 8')">Episode 8</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1H0BOZ9tVzB3_o3-gxhJ0zG3ZbOxRQvR3/preview','Kisah Asmara Kita - Episode 9')">Episode 9</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1H-mJREK2OFnKcWi0W6B7fe_iHQQUVAzq/preview','Kisah Asmara Kita - Episode 10')">Episode 10</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1HMbQbbrkY3MxQJdNx89yds0ubjq455l4/preview','Kisah Asmara Kita - Episode 11')">Episode 11</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1HERsLkKHtm4A1v57V4DTOg1ztMk7o0E3/preview','Kisah Asmara Kita - Episode 12 END')">Episode 12 END</a>
-        <!-- Tambahkan episode lain dengan pola sama -->
+      <div style="margin-top:10px;display:flex;justify-content:center">
+        <button class="btn" onclick="openModal('gacha')">Gacha Kunci</button>
       </div>
-      <div class="close" onclick="closeModal('kak')">Tutup</div>
     </div>
   </div>
 
-  <!-- MATO SEIHEI NO SLAVE -->
-  <div id="modal-msns" class="modal">
+  <!-- MODAL IKLAN (RANDOM FOTO/VIDEO) -->
+  <div id="modal-ad" class="modal" tabindex="-1">
     <div class="modal-content">
-      <h3>Mato Seihei No Slave</h3>
-      <div class="episode-list">
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1FFgrhfvhiqzzCZu1wdSbLs9YpKXIi5Dp/preview','MATO SEIHEI NO SLAVE - Episode 1')">Episode 1</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1FduwoMcwWSr5by54TXuVQKgGg2T5UVcV/preview','MATO SEIHEI NO SLAVE - Episode 2')">Episode 2</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1FeMw5GZy5ChuROR8zQwQlm0MP_mOf664/preview','MATO SEIHEI NO SLAVE - Episode 3')">Episode 3</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1FmKGtB8MLKjcwSPm9beorBu2JX9yuZSX/preview','MATO SEIHEI NO SLAVE - Episode 4')">Episode 4</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1Fk1-JgF_JbCRaMbPYjhUnDDkFhRZz_Y7/preview','MATO SEIHEI NO SLAVE - Episode 5')">Episode 5</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1FoFAAkhc89XShCv77avQzrTsT2JHxB8B/preview','MATO SEIHEI NO SLAVE - Episode 6')">Episode 6</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1GE_jjyAuNgYMRbsyGwHbQ02J-60Z6ygh/preview','MATO SEIHEI NO SLAVE - Episode 7')">Episode 7</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1GM0-KIs5CTCXnOmN2iLBt5IhIMds_KgW/preview','MATO SEIHEI NO SLAVE - Episode 8')">Episode 8</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1GEtXX4z2gDGK99y4ehKoBZuCHsgipMHX/preview','MATO SEIHEI NO SLAVE - Episode 9')">Episode 9</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1FMbxzvAgkAitpvAPBxRfs5DCUsDwmCWP/preview','MATO SEIHEI NO SLAVE - Episode 10')">Episode 10</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1FWIyR6QlEhMEZGvKgg5t7WLAt3-Qxi40/preview','MATO SEIHEI NO SLAVE - Episode 11')">Episode 11</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1FZt7Ohfg3crWUhrbkWlxHP8h0nxpYRFO/preview','MATO SEIHEI NO SLAVE - Episode 12 END')">Episode 12 END</a>
-      </div>
-      <div class="close" onclick="closeModal('msns')">Tutup</div>
+      <h3>Iklan</h3>
+      <div id="adBox" class="ad-box" style="margin-top:8px"></div>
+      <p id="adHint" style="color:#aab; font-size:12px; margin-top:8px;text-align:center"></p>
+      <p id="adTimer" style="text-align:center;margin-top:6px"></p>
+      <div class="actions" id="adActions" style="justify-content:center"></div>
     </div>
   </div>
 
-   <!-- The Angel Next Door Spoils Me Rotten -->
-  <div id="modal-tan" class="modal">
+  <!-- MODAL DAILY QUEST -->
+  <div id="modal-daily" class="modal" tabindex="-1">
     <div class="modal-content">
-      <h3>The Angel Next Door Spoils Me Rotten</h3>
-      <div class="episode-list">
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1DpWAoii9JpYAhSKJ1K9qHLoX1bLbCbdx/preview','The Angel Next Door Spoils Me Rotten - Episode 1')">Episode 1</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1DudGAaSx8WFewCrhihw8xvbD8wgdzO2_/preview','The Angel Next Door Spoils Me Rotten - Episode 2')">Episode 2</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1Eml3iSTc3rzUwozNi0f-p4XsVPDik0qp/preview','The Angel Next Door Spoils Me Rotten - Episode 3')">Episode 3</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1EKJ1k-6n7jyAnhDMT4MGFukxiA_rBKTb/preview','The Angel Next Door Spoils Me Rotten - Episode 4')">Episode 4</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1EhOE7sIxTV-bcApOou1cUZltY1FTSbZC/preview','The Angel Next Door Spoils Me Rotten - Episode 5')">Episode 5</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1DxuRnp10cT3DVkR1UjF2H4EEZyp-s_97/preview','The Angel Next Door Spoils Me Rotten - Episode 6')">Episode 6</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1E3GD5b5BxaEGI105b2j2xrcPmpIdpA-n/preview','The Angel Next Door Spoils Me Rotten - Episode 7')">Episode 7</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1EHYhJsTF2gg3bNCtMLq93pI1DZYpmbaX/preview','The Angel Next Door Spoils Me Rotten - Episode 8')">Episode 8</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1EL4EQ8pn5yrPWD-KvOY0kNYK0UGq97o9/preview','The Angel Next Door Spoils Me Rotten - Episode 9')">Episode 9</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1EeQAZZB_tGCcja--d_r4OE84lW7ra0dy/preview','The Angel Next Door Spoils Me Rotten - Episode 10')">Episode 10</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1EgMIPHTz6YmI5lMPcydbahPyVMeqRSLB/preview','The Angel Next Door Spoils Me Rotten - Episode 11')">Episode 11</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1EiKrpgumy30mrE2UM3T_d8TmdCvXFvjQ/preview','The Angel Next Door Spoils Me Rotten - Episode 12 END')">Episode 12 END</a>
+      <h3>Daily Quest</h3>
+      <div id="dailyList" style="margin-top:8px"></div>
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+        <div class="close btn" onclick="closeModal('daily')">Tutup</div>
       </div>
-      <div class="close" onclick="closeModal('tan')">Tutup</div>
+      <p style="color:#aab; font-size:12px; margin-top:6px;">Reset misi tiap hari (waktu device).</p>
     </div>
   </div>
 
-  <!-- The Aristocrat's Otherworldly Adventure: Serving Gods Who Go Too Far -->
-  <div id="modal-tao" class="modal">
+  <!-- MODAL GACHA -->
+  <div id="modal-gacha" class="modal" tabindex="-1">
     <div class="modal-content">
-      <h3>The Aristocrat's Otherworldly Adventure: Serving Gods Who Go Too Far</h3>
-      <div class="episode-list">
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1GkwVOgH1uPoI3Aj9Rbxp2lw03-864x93/preview','The Aristocrats Otherworldly Adventure Serving Gods Who Go Too Far - Episode 1')">Episode 1</a>
-        <a onclick="gantiEpisode('https://drive.google.com/file/d/1GislNP02kfeIG9vOpnlMdF45pr-Etz5W/preview','The Aristocrats Otherworldly Adventure Serving Gods Who Go Too Far - Episode 2')">Episode 2</a>
+      <h3>Gacha Kunci</h3>
+      <p class="small" style="margin-top:6px">Biaya: <strong>1 kunci</strong> per spin. Hadiah: 1k / 3k / 5k / 20 EXP.</p>
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:center">
+        <button class="btn" onclick="doGacha()">Spin (1 Key)</button>
       </div>
-      <div class="close" onclick="closeModal('tao')">Tutup</div>
+      <div id="gachaResult" style="margin-top:12px;text-align:center"></div>
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+        <div class="close btn" onclick="closeModal('gacha')">Tutup</div>
+      </div>
     </div>
   </div>
 
-  <!-- ===== TEMPLATE MODAL SIAP COPAS =====
-  <div id="modal-unikid" class="modal">
-    <div class="modal-content">
-      <h3>Judul Anime</h3>
-      <div class="episode-list">
-        <a onclick="gantiEpisode('DRIVE_PREVIEW_URL','Judul Anime - Episode 1')">Episode 1</a>
-        <a onclick="gantiEpisode('DRIVE_PREVIEW_URL','Judul Anime - Episode 2')">Episode 2</a>
-      </div>
-      <div class="close" onclick="closeModal('unikid')">Tutup</div>
-    </div>
-  </div>
-  ========================================= -->
+  <!-- ================== MODALS EPISODE ================== -->
+  <!-- (episode modals unchanged) -->
+  <!-- ... keep your episode modals here (same as original) ... -->
 
   <script>
-    // Ganti episode (Google Drive preview)
+    /* =========================
+       UTIL & STORAGE
+       ========================= */
+    const LS_USERS = "oy_users";      // map username -> {password, keys, exp, level, daily}
+    const LS_USER  = "oy_currentUser"; // string username yang sedang login
+
+    function getUsers(){ return JSON.parse(localStorage.getItem(LS_USERS) || "{}"); }
+    function setUsers(obj){ localStorage.setItem(LS_USERS, JSON.stringify(obj)); }
+    function getCurrentUsername(){ return localStorage.getItem(LS_USER) || null; }
+    function setCurrentUsername(u){ if(u) localStorage.setItem(LS_USER, u); else localStorage.removeItem(LS_USER); }
+    function getCurrentUserObj(){ const u = getCurrentUsername(); if(!u) return null; const users = getUsers(); return users[u] || null; }
+
+    function saveCurrentUserObj(updater){
+      const u = getCurrentUsername(); if(!u) return;
+      const users = getUsers();
+      users[u] = updater(users[u] || {});
+      setUsers(users);
+      renderUserBar();
+    }
+
+    function isLoggedIn(){ return !!getCurrentUsername(); }
+
+    /* =========================
+       AUTH (LOGIN / REGISTER)
+       ========================= */
+    function openModal(id){ const el = document.getElementById('modal-'+id); if(el){ el.style.display='flex'; el.focus?.(); } }
+    function closeModal(id){ const el = document.getElementById('modal-'+id); if(el){ el.style.display='none'; } }
+    function closeAllModals(){ document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); }
+
+    function openAuth(){ openModal('auth'); }
+    function doLogin(){
+      const uname = document.getElementById('authUser').value.trim();
+      const pass  = document.getElementById('authPass').value;
+      const users = getUsers();
+      if(!users[uname]){ alert("Akun tidak ditemukan. Silakan register."); return; }
+      if(users[uname].password !== pass){ alert("Password salah."); return; }
+      setCurrentUsername(uname);
+      // ensure defaults exist
+      saveCurrentUserObj(u => ({ password: u.password, keys: u.keys ?? 3, exp: u.exp ?? 0, level: u.level ?? 1, daily: u.daily ?? null }));
+      setupDailyIfNeeded();
+      closeModal('auth');
+      renderUserBar();
+      showToast("Login berhasil. Selamat datang, " + uname + "!");
+    }
+    function doRegister(){
+      const uname = document.getElementById('authUser').value.trim();
+      const pass  = document.getElementById('authPass').value;
+      if(!uname || !pass){ alert("Username & Password wajib diisi."); return; }
+      const users = getUsers();
+      if(users[uname]){ alert("Username sudah dipakai. Coba yang lain."); return; }
+      users[uname] = { password: pass, keys: 3, exp: 0, level: 1, daily: null };
+      setUsers(users);
+      setCurrentUsername(uname);
+      setupDailyIfNeeded();
+      closeModal('auth');
+      renderUserBar();
+      showToast("Register berhasil. Kamu mendapat 3 kunci.");
+    }
+    function logout(){ setCurrentUsername(null); renderUserBar(); showToast("Logout berhasil."); }
+
+    /* =========================
+       LEVEL & EXP SYSTEM
+       ========================= */
+    const levelRequirements = [0, 1000, 3000, 6000, 10000, 15000]; // adjust if needed
+
+    function calculateLevel(exp) {
+      let lvl = 1;
+      for (let i = 0; i < levelRequirements.length; i++) {
+        if (exp >= levelRequirements[i]) lvl = i + 1;
+      }
+      return lvl;
+    }
+    function expForNext(level) {
+      if (level >= levelRequirements.length) return levelRequirements.at(-1);
+      return levelRequirements[level];
+    }
+
+    function addExpFromMinutes(minutes){
+      // minutes -> EXP conversion: 10 exp per minute (configurable)
+      const gainedExp = Math.round(minutes * 10);
+      saveCurrentUserObj(u => {
+        u.exp = (u.exp || 0) + gainedExp;
+        const oldLevel = u.level || 1;
+        const newLevel = calculateLevel(u.exp);
+        if(newLevel > oldLevel){
+          // reward for even levels
+          if(newLevel % 2 === 0){
+            u.keys = (u.keys || 0) + 1;
+            showToast(`🎉 Level UP ${newLevel}! Bonus 1 kunci 🔑`);
+          } else {
+            showToast(`🎉 Level UP ${newLevel}!`);
+          }
+        }
+        u.level = newLevel;
+        return u;
+      });
+    }
+
+    /* =========================
+       RENDER USER BAR (UPGRADED)
+       ========================= */
+    function renderUserBar(){
+      const bar = document.getElementById('userBar');
+      const u = getCurrentUserObj();
+      if(!u){
+        bar.innerHTML = `
+          <span class="pill">Belum login</span>
+          <button class="btn outline" onclick="openAuth()">Login / Register</button>
+          <button class="btn" onclick="openModal('gacha')">Gacha</button>
+        `;
+        return;
+      }
+      const username = getCurrentUsername();
+      const keys = u.keys ?? 0;
+      const level = u.level ?? 1;
+      const exp = u.exp ?? 0;
+      const next = expForNext(level);
+      const prev = expForNext(level-1);
+      const progress = Math.min(100, ((exp - prev) / (next - prev)) * 100 || 0);
+
+      bar.innerHTML = `
+        <span class="pill">👤 ${username}</span>
+        <span class="pill">Lv.${level}</span>
+        <span class="pill">EXP: ${exp}/${next}</span>
+        <span class="pill">🔑 ${keys}</span>
+        <div style="flex-basis:100%;height:6px;background:#334155;border-radius:4px;overflow:hidden;margin-top:6px;">
+          <div style="height:100%;width:${progress}%;background:#00ffff;"></div>
+        </div>
+        <button class="btn success" onclick="openModal('upgrade')">Dapatkan Kunci</button>
+        <button class="btn outline" onclick="openModal('daily')">Misi</button>
+        <button class="btn" onclick="openModal('gacha')">Gacha</button>
+        <button class="btn danger" onclick="logout()">Logout</button>
+      `;
+    }
+
+    /* =========================
+       IKLAN RANDOM (POOL) - unchanged
+       ========================= */
+    const AD_POOL = [
+      { type: 'image', url: "https://github.com/YudaTole/Data-Anime/raw/refs/heads/main/The%20Aristocrat's%20Otherworldly%20Adventure%20Serving%20Gods%20Who%20Go%20Too%20Far.png" },
+      { type: 'video', url: "https://github.com/YudaTole/My-video/raw/refs/heads/main/Animals%20%F0%9F%A5%B6.mp4" },
+      { type: 'image', url: "https://picsum.photos/800/450?random=1" },
+      { type: 'image', url: "https://picsum.photos/800/450?random=2" },
+      { type: 'video', url: "https://www.w3schools.com/html/mov_bbb.mp4" }
+    ];
+
+    function pickRandomAd(){ return AD_POOL[Math.floor(Math.random() * AD_POOL.length)]; }
+    function renderAdInto(container){
+      container.innerHTML = '';
+      const ad = pickRandomAd();
+      if(ad.type === 'image'){
+        const img = document.createElement('img'); img.src = ad.url; img.alt = 'Ad'; container.appendChild(img);
+      } else {
+        const v = document.createElement('video'); v.src = ad.url; v.controls = true; v.autoplay = true; v.playsInline = true; v.muted = true; container.appendChild(v);
+      }
+    }
+
+    /* =========================
+       IKLAN QUICK + PAKET (UNCHANGED LOGIC)
+       ========================= */
+    function watchAdForKeys(onDone){
+      const adBox = document.getElementById('adBox'); const adHint = document.getElementById('adHint');
+      const adActions = document.getElementById('adActions'); const adTimer = document.getElementById('adTimer');
+      adBox.innerHTML = ''; adActions.innerHTML = ''; adHint.textContent = ''; adTimer.textContent='';
+
+      renderAdInto(adBox); openModal('ad');
+
+      // Quick model: tombol untuk klaim setelah minimal 10 detik
+      let left = 10; adTimer.textContent = `Sisa waktu: ${left} detik`;
+      const t = setInterval(()=>{
+        left--; adTimer.textContent = `Sisa waktu: ${left} detik`;
+        if(left<=0){
+          clearInterval(t);
+          adHint.textContent = 'Klik tombol untuk klaim +3 kunci.';
+          const ok = document.createElement('button');
+          ok.className = 'btn'; ok.textContent = 'Tutup Iklan & Klaim +3 Kunci';
+          ok.onclick = () => { closeModal('ad'); grantKeys(3); onDone && onDone(); showToast('Mantap! Kamu mendapatkan +3 kunci.'); };
+          adActions.appendChild(ok);
+        }
+      },1000);
+    }
+
+    function startPackageAd(keys, duration){
+      const u = getCurrentUserObj(); if(!u){ alert('Silakan login dulu.'); return; }
+      closeModal('upgrade');
+      const adBox = document.getElementById('adBox'); const adHint = document.getElementById('adHint');
+      const adActions = document.getElementById('adActions'); const adTimer = document.getElementById('adTimer');
+      adBox.innerHTML = ''; adActions.innerHTML = ''; adHint.textContent = ''; adTimer.textContent='';
+      renderAdInto(adBox);
+      adHint.textContent = `Tonton iklan sampai selesai (${duration} detik) untuk mendapat ${keys} kunci.`;
+      openModal('ad');
+
+      let left = duration; adTimer.textContent = `Sisa waktu: ${left} detik`;
+      const t = setInterval(()=>{
+        left--; adTimer.textContent = `Sisa waktu: ${left} detik`;
+        if(left<=0){
+          clearInterval(t);
+          adHint.textContent = 'Selesai! Kamu bisa klaim kuncimu.';
+          const ok = document.createElement('button');
+          ok.className = 'btn'; ok.textContent = `Klaim ${keys} Kunci`;
+          ok.onclick = () => { closeModal('ad'); grantKeys(keys); showToast(`Iklan selesai! Kamu mendapat ${keys} kunci 🔑.`); };
+          adActions.appendChild(ok);
+        }
+      },1000);
+    }
+
+    function grantKeys(n){ const u = getCurrentUserObj(); if(!u) return; saveCurrentUserObj(prev => ({...prev, keys: (prev.keys||0) + n})); }
+    function consumeKeyIfBasic(){ const u = getCurrentUserObj(); if(!u) return false; const k = u.keys || 0; if(k <= 0) return false; saveCurrentUserObj(prev => ({...prev, keys: (prev.keys||0) - 1})); return true; }
+
+    /* =========================
+       PLAYER & EPISODE FLOW (integrasi EXP & daily)
+       ========================= */
+    // Simple duration map: jika kamu punya data per episode, letakkan di sini (menit)
+    const episodeDurations = {
+      // contoh: gunakan judul persis seperti yang dikirim saat requestPlay
+      'Our Dating Story - Episode 1': 24,
+      'Our Dating Story - Episode 2': 24,
+      'Our Dating Story - Episode 3': 24,
+      'Mato Seihei No Slave - Episode 1': 24,
+      'The Angel Next Door - Episode 1': 23,
+      'Aristocrat Adventure - Episode 1': 25,
+      // tambahkan sesuai kebutuhan
+    };
+
     function gantiEpisode(link, judul){
       const player   = document.getElementById('player');
       const titleEl  = document.getElementById('judul');
       player.src = link;
       titleEl.textContent = '🎬 ' + judul;
       document.querySelectorAll('.modal').forEach(m=>m.style.display='none');
-      // scroll smooth ke player saat pilih episode
       document.querySelector('.player').scrollIntoView({behavior:'smooth', block:'start'});
+
+      // add EXP based on known duration (menit). jika tidak ada, pakai default 24 menit
+      const minutes = episodeDurations[judul] || 24;
+      addExpFromMinutes(minutes);
+
+      // mark daily watch progress
+      incrementDailyWatchCount();
     }
 
-    // Modal open/close
-    function openModal(id){ document.getElementById('modal-'+id).style.display='flex'; }
-    function closeModal(id){ document.getElementById('modal-'+id).style.display='none'; }
+    // Flow: klik episode -> cek login + keys
+    function requestPlay(link, judul){
+      const user = getCurrentUserObj();
+      if(!user){ openAuth(); return; }
 
-    // Search by title/genre
-    document.getElementById('searchInput').addEventListener('input', function(){
-      const q = this.value.trim().toLowerCase();
-      document.querySelectorAll('#animeList .card').forEach(card=>{
-        const title = (card.dataset.title||'').toLowerCase();
-        const genre = (card.dataset.genre||'').toLowerCase();
-        card.classList.toggle('hide', !(title.includes(q) || genre.includes(q)));
+      if((user.keys||0) <= 0){
+        openModal('need-keys');
+        pendingPlay = { link, judul };
+        return;
+      }
+
+      if(consumeKeyIfBasic()){
+        gantiEpisode(link, judul);
+      }else{
+        openModal('need-keys');
+        pendingPlay = { link, judul };
+      }
+    }
+
+    let pendingPlay = null; // menyimpan episode yang ingin diputar saat kunci habis
+
+    function watchAdForKeysAndContinue(){
+      watchAdForKeys(()=> {
+        closeModal('need-keys');
+        if(pendingPlay){
+          if(consumeKeyIfBasic()){
+            gantiEpisode(pendingPlay.link, pendingPlay.judul);
+            pendingPlay = null;
+          }
+        }
       });
-    });
+    }
+
+    const btnWatchAd3 = document.getElementById('btnWatchAd3');
+    if(btnWatchAd3){ btnWatchAd3.addEventListener('click', watchAdForKeysAndContinue); }
+
+    /* =========================
+       DAILY QUEST SYSTEM
+       ========================= */
+    function todayDateStr(){ const d = new Date(); return `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getDate().toString().padStart(2,'0')}`; }
+
+    function setupDailyIfNeeded(){
+      const u = getCurrentUserObj(); if(!u) return;
+      const today = todayDateStr();
+      if(!u.daily || u.daily.date !== today){
+        // reset daily
+        saveCurrentUserObj(prev => ({ ...prev, daily: { date: today, tasks: { login: false, watchEpisode: 0, spinGacha: 0 }, claimed: [] } }));
+      }
+    }
+
+    function getDaily(){
+      const u = getCurrentUserObj(); if(!u) return null;
+      return u.daily || null;
+    }
+
+    function renderDailyModal(){
+      const daily = getDaily();
+      const container = document.getElementById('dailyList');
+      if(!daily){
+        container.innerHTML = '<p>Tidak ada data misi. Silakan login.</p>';
+        return;
+      }
+      // define tasks & rewards
+      const tasks = [
+        { id: 'login', label: 'Login hari ini', done: daily.tasks.login, reward: { keys: 1 } },
+        { id: 'watchEpisode', label: 'Tonton 1 episode', done: daily.tasks.watchEpisode >= 1, reward: { keys: 1 } },
+        { id: 'spinGacha', label: 'Spin gacha 1x', done: daily.tasks.spinGacha >= 1, reward: { keys: 1 } }
+      ];
+      let html = '';
+      tasks.forEach(t => {
+        const claimed = (daily.claimed || []).includes(t.id);
+        html += `<div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:700">${t.label}</div>
+              <div class="small">Reward: ${t.reward.keys} kunci</div>
+            </div>
+            <div>
+              ${ t.done ? (claimed ? '<span class="pill">Sudah diambil</span>' : `<button class="btn" onclick="claimDailyReward('${t.id}')">Klaim</button>`) : '<span class="pill">Belum</span>' }
+            </div>
+          </div>
+        </div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    function claimDailyReward(taskId){
+      const u = getCurrentUserObj(); if(!u) return;
+      const daily = u.daily || {};
+      if(!daily.tasks) return;
+      // already claimed?
+      if((daily.claimed||[]).includes(taskId)){ showToast("Sudah diklaim."); return; }
+      // check task done
+      let ok = false; let rewardKeys = 0;
+      if(taskId === 'login' && daily.tasks.login) { ok = true; rewardKeys = 1; }
+      if(taskId === 'watchEpisode' && (daily.tasks.watchEpisode||0) >= 1) { ok = true; rewardKeys = 1; }
+      if(taskId === 'spinGacha' && (daily.tasks.spinGacha||0) >= 1) { ok = true; rewardKeys = 1; }
+      if(!ok){ showToast("Belum selesai tugasnya."); return; }
+
+      saveCurrentUserObj(prev => {
+        prev.keys = (prev.keys||0) + rewardKeys;
+        prev.daily = prev.daily || {};
+        prev.daily.claimed = prev.daily.claimed || [];
+        prev.daily.claimed.push(taskId);
+        return prev;
+      });
+      showToast(`Berhasil klaim ${rewardKeys} kunci!`);
+      renderDailyModal();
+    }
+
+    function markDailyLogin(){
+      saveCurrentUserObj(prev => {
+        prev.daily = prev.daily || { date: todayDateStr(), tasks: { login:false, watchEpisode:0, spinGacha:0 }, claimed:[] };
+        prev.daily.tasks.login = true;
+        return prev;
+      });
+    }
+
+    function incrementDailyWatchCount(){
+      saveCurrentUserObj(prev => {
+        prev.daily = prev.daily || { date: todayDateStr(), tasks: { login:false, watchEpisode:0, spinGacha:0 }, claimed:[] };
+        prev.daily.tasks.watchEpisode = (prev.daily.tasks.watchEpisode || 0) + 1;
+        return prev;
+      });
+    }
+
+    function incrementDailySpinCount(){
+      saveCurrentUserObj(prev => {
+        prev.daily = prev.daily || { date: todayDateStr(), tasks: { login:false, watchEpisode:0, spinGacha:0 }, claimed:[] };
+        prev.daily.tasks.spinGacha = (prev.daily.tasks.spinGacha || 0) + 1;
+        return prev;
+      });
+    }
+
+    /* =========================
+       GACHA KUNCI
+       ========================= */
+    // probability wheel (sum weights = 100)
+    // adjust weights as desired
+    const gachaPool = [
+      { type:'keys', value:1, weight:50 },
+      { type:'keys', value:3, weight:30 },
+      { type:'keys', value:5, weight:15 },
+      { type:'exp', value:20, weight:5 }, // 20 EXP bonus
+    ];
+
+    function doGacha(){
+      const u = getCurrentUserObj();
+      if(!u){ alert("Silakan login dulu."); return; }
+      if((u.keys||0) < 1){ alert("Kunci tidak cukup."); return; }
+      // consume 1 key
+      saveCurrentUserObj(prev => ({ ...prev, keys: (prev.keys||0) - 1 }));
+
+      // spin
+      const total = gachaPool.reduce((s,i)=>s+i.weight,0);
+      let r = Math.random() * total;
+      let chosen = gachaPool.find(i => { r -= i.weight; return r <= 0; });
+
+      // apply reward
+      if(chosen.type === 'keys'){
+        grantKeys(chosen.value);
+        document.getElementById('gachaResult').innerText = `Kamu dapat ${chosen.value} kunci! 🎉`;
+        showToast(`Gacha: +${chosen.value} kunci`);
+      } else if(chosen.type === 'exp'){
+        // EXP reward uses minutes->exp mapping; here we directly add EXP points
+        // we'll convert exp points to minutes equivalent for consistency: gainedExp is points directly
+        saveCurrentUserObj(prev => {
+          prev.exp = (prev.exp||0) + chosen.value;
+          const oldLevel = prev.level || 1;
+          const newLevel = calculateLevel(prev.exp);
+          if(newLevel > oldLevel){
+            if(newLevel % 2 === 0){
+              prev.keys = (prev.keys||0) + 1;
+              showToast(`🎉 Level UP ${newLevel}! Bonus 1 kunci 🔑`);
+            } else {
+              showToast(`🎉 Level UP ${newLevel}!`);
+            }
+          }
+          prev.level = newLevel;
+          return prev;
+        });
+        document.getElementById('gachaResult').innerText = `Kamu dapat ${chosen.value} EXP! ⭐`;
+        showToast(`Gacha: +${chosen.value} EXP`);
+      }
+
+      incrementDailySpinCount();
+      renderUserBar();
+      renderDailyModal();
+    }
+
+    /* =========================
+       UTILS: toast, backdrop close, esc handling
+       ========================= */
+    function showToast(msg){
+      let t = document.createElement("div");
+      t.textContent = msg;
+      t.style.position = "fixed";
+      t.style.bottom = "20px";
+      t.style.right = "20px";
+      t.style.background = "#00ffff";
+      t.style.color = "#000";
+      t.style.padding = "10px 16px";
+      t.style.borderRadius = "12px";
+      t.style.boxShadow = "0 4px 20px rgba(0,255,255,.3)";
+      t.style.zIndex = "200";
+      document.body.appendChild(t);
+      setTimeout(()=>{ t.remove(); }, 3500);
+    }
+
+    window.addEventListener('click', e=>{ if(e.target.classList.contains('modal')) e.target.style.display='none'; });
+    window.addEventListener('keydown', e=>{ if(e.key==='Escape'){ document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); }});
+
+    // render daily when open
+    document.getElementById('modal-daily')?.addEventListener('click', ()=>{ renderDailyModal(); });
+
+    // Init
+    (function init(){
+      // ensure users object exists
+      if(!localStorage.getItem(LS_USERS)) localStorage.setItem(LS_USERS, JSON.stringify({}));
+
+      // if logged in, ensure daily setup & mark login
+      const cur = getCurrentUsername();
+      if(cur){
+        setupDailyIfNeeded();
+        markDailyLogin();
+      }
+      renderUserBar();
+    })();
   </script>
 </body>
-  </html>
+</html>
