@@ -37,9 +37,7 @@
     .btn.success{background:var(--success);border-color:transparent;color:#001}
 
     /* SEARCH */
-    .search{
-      max-width:1100px;margin:16px auto 0;padding:0 16px 8px;
-    }
+    .search{ max-width:1100px;margin:16px auto 0;padding:0 16px 8px; }
     .search input{
       width:100%;padding:12px 14px;border-radius:10px;border:2px solid rgba(0,255,255,.35);
       background:#0f0f10;color:var(--text);font-size:15px;outline:none;
@@ -93,10 +91,10 @@
     .badge.rating{border-color:rgba(0,255,160,.4)}
 
     /* MODAL umum */
-    .modal{display:none;position:fixed;z-index:80;inset:0;background:rgba(0,0,0,.88);
+    .modal{display:none;position:fixed;z-index:120;inset:0;background:rgba(0,0,0,.88);
       align-items:center;justify-content:center;padding:16px}
     .modal-content{
-      width:100%;max-width:420px;background:#101012;border:1px solid rgba(0,255,255,.25);
+      width:100%;max-width:480px;background:#101012;border:1px solid rgba(0,255,255,.25);
       border-radius:14px;padding:18px;box-shadow:0 18px 60px rgba(0,255,255,.15);animation:pop .18s ease;
       max-height:80vh;overflow-y:auto;
     }
@@ -117,6 +115,12 @@
     .ad-box img,.ad-box video{max-width:100%;max-height:60vh;border-radius:12px;border:1px solid rgba(0,255,255,.25)}
 
     .hide{display:none!important}
+
+    @media(max-width:480px){
+      header h1{font-size:13px}
+      .btn{padding:6px 10px;font-size:13px}
+      .pill{font-size:11px;padding:4px 8px}
+    }
   </style>
 </head>
 <body>
@@ -215,7 +219,7 @@
   <!-- ================== MODALS ================== -->
 
   <!-- LOGIN / REGISTER -->
-  <div id="modal-auth" class="modal">
+  <div id="modal-auth" class="modal" tabindex="-1">
     <div class="modal-content">
       <h3 id="authTitle">Masuk / Daftar</h3>
       <div>
@@ -236,33 +240,49 @@
   </div>
 
   <!-- PILIHAN JIKA KUNCI HABIS (BASIC) -->
-  <div id="modal-need-keys" class="modal">
+  <div id="modal-need-keys" class="modal" tabindex="-1">
     <div class="modal-content">
       <h3>Kunci kamu habis</h3>
       <p style="margin:8px 0 12px;color:#a7e7e7">Pilih salah satu:</p>
       <div class="actions">
-        <button class="btn" onclick="watchAdForKeys()">Tonton Iklan (+3 kunci)</button>
+        <button class="btn" id="btnWatchAd3">Tonton Iklan (+3 kunci)</button>
+        <button class="btn success" onclick="openModal('upgrade')">Dapatkan Kunci</button>
       </div>
       <div class="close" onclick="closeModal('need-keys')">Tutup</div>
     </div>
   </div>
 
- 
+  <!-- DAPATKAN KUNCI (PAKET + IKLAN DURASI) -->
+  <div id="modal-upgrade" class="modal" tabindex="-1">
+    <div class="modal-content">
+      <h3>Dapatkan Kunci 🔑 dengan Nonton Iklan</h3>
+      <p style="margin:6px 0 10px;color:#a7e7e7">Pilih paket & tonton iklan sesuai durasi:</p>
+      <div class="actions">
+        <button class="btn" onclick="startPackageAd(12,15)">12 Key (15s)</button>
+        <button class="btn" onclick="startPackageAd(15,30)">15 Key (30s)</button>
+        <button class="btn" onclick="startPackageAd(25,45)">25 Key (45s)</button>
+        <button class="btn" onclick="startPackageAd(30,60)">30 Key (60s)</button>
+      </div>
+      <div class="close" onclick="closeModal('upgrade')">Batal</div>
+      <p style="color:#aab; font-size:12px; margin-top:6px;">* Demo: tidak ada pembayaran, hanya menonton iklan.</p>
+    </div>
+  </div>
+
   <!-- MODAL IKLAN (RANDOM FOTO/VIDEO) -->
-  <div id="modal-ad" class="modal">
+  <div id="modal-ad" class="modal" tabindex="-1">
     <div class="modal-content">
       <h3>Iklan</h3>
       <div id="adBox" class="ad-box" style="margin-top:8px"></div>
       <p id="adHint" style="color:#aab; font-size:12px; margin-top:8px;text-align:center"></p>
+      <p id="adTimer" style="text-align:center;margin-top:6px"></p>
       <div class="actions" id="adActions" style="justify-content:center"></div>
     </div>
   </div>
 
-
   <!-- ================== MODALS EPISODE ================== -->
 
   <!-- Our Dating Story -->
-  <div id="modal-kak" class="modal">
+  <div id="modal-kak" class="modal" tabindex="-1">
     <div class="modal-content">
       <h3>Our Dating Story</h3>
       <div class="episode-list">
@@ -284,7 +304,7 @@
   </div>
 
   <!-- MATO SEIHEI NO SLAVE -->
-  <div id="modal-msns" class="modal">
+  <div id="modal-msns" class="modal" tabindex="-1">
     <div class="modal-content">
       <h3>Mato Seihei No Slave</h3>
       <div class="episode-list">
@@ -306,7 +326,7 @@
   </div>
 
   <!-- The Angel Next Door -->
-  <div id="modal-tan" class="modal">
+  <div id="modal-tan" class="modal" tabindex="-1">
     <div class="modal-content">
       <h3>The Angel Next Door Spoils Me Rotten</h3>
       <div class="episode-list">
@@ -328,7 +348,7 @@
   </div>
 
   <!-- The Aristocrat's Otherworldly Adventure -->
-  <div id="modal-tao" class="modal">
+  <div id="modal-tao" class="modal" tabindex="-1">
     <div class="modal-content">
       <h3>The Aristocrat's Otherworldly Adventure</h3>
       <div class="episode-list">
@@ -373,8 +393,8 @@
     /* =========================
        AUTH (LOGIN / REGISTER)
        ========================= */
-    function openModal(id){ document.getElementById('modal-'+id).style.display='flex'; }
-    function closeModal(id){ document.getElementById('modal-'+id).style.display='none'; }
+    function openModal(id){ const el = document.getElementById('modal-'+id); if(el){ el.style.display='flex'; el.focus?.(); } }
+    function closeModal(id){ const el = document.getElementById('modal-'+id); if(el){ el.style.display='none'; } }
 
     function openAuth(){ openModal('auth'); }
     function doLogin(){
@@ -401,10 +421,7 @@
       renderUserBar();
       alert("Register berhasil. Kamu mendapat 3 kunci.");
     }
-    function logout(){
-      setCurrentUsername(null);
-      renderUserBar();
-    }
+    function logout(){ setCurrentUsername(null); renderUserBar(); }
 
     function renderUserBar(){
       const bar = document.getElementById('userBar');
@@ -416,68 +433,102 @@
         `;
         return;
       }
-
- const username = getCurrentUsername();
-      const role = u.role;
+      const username = getCurrentUsername();
       const keys = u.keys ?? 0;
       bar.innerHTML = `
         <span class="pill">👤 ${username}</span>
-        <span class="pill">${role === '🔑 Basic'}</span>
+        <span class="pill">🔑 Key: ${keys}</span>
+        <button class="btn success" onclick="openModal('upgrade')">Dapatkan Kunci</button>
         <button class="btn danger" onclick="logout()">Logout</button>
       `;
     }
-      
+
     /* =========================
-       ADs RANDOM
+       IKLAN RANDOM (POOL)
        ========================= */
-    const ADS = [
-      // Foto iklan
-      "https://github.com/YudaTole/Data-Anime/raw/refs/heads/main/The%20Aristocrat's%20Otherworldly%20Adventure%20Serving%20Gods%20Who%20Go%20Too%20Far.png",
-      // Video iklan
-      "https://github.com/YudaTole/My-video/raw/refs/heads/main/Animals%20%F0%9F%A5%B6.mp4"
+    const AD_POOL = [
+      { type: 'image', url: "https://github.com/YudaTole/Data-Anime/raw/refs/heads/main/The%20Aristocrat's%20Otherworldly%20Adventure%20Serving%20Gods%20Who%20Go%20Too%20Far.png" },
+      { type: 'video', url: "https://github.com/YudaTole/My-video/raw/refs/heads/main/Animals%20%F0%9F%A5%B6.mp4" },
+      { type: 'image', url: "https://picsum.photos/800/450?random=1" },
+      { type: 'image', url: "https://picsum.photos/800/450?random=2" },
+      { type: 'video', url: "https://www.w3schools.com/html/mov_bbb.mp4" }
     ];
 
+    function pickRandomAd(){
+      return AD_POOL[Math.floor(Math.random() * AD_POOL.length)];
+    }
+
+    function renderAdInto(container){
+      container.innerHTML = '';
+      const ad = pickRandomAd();
+      if(ad.type === 'image'){
+        const img = document.createElement('img');
+        img.src = ad.url; img.alt = 'Ad';
+        container.appendChild(img);
+      } else {
+        const v = document.createElement('video');
+        v.src = ad.url; v.controls = true; v.autoplay = true; v.playsInline = true; v.muted = true; // muted untuk bypass blokir autoplay desktop
+        container.appendChild(v);
+      }
+    }
+
+    /* =========================
+       IKLAN: +3 KEY (QUICK) — dipakai saat kunci habis
+       ========================= */
     function watchAdForKeys(onDone){
-      // Tampilkan modal iklan dengan konten random
       const adBox = document.getElementById('adBox');
       const adHint = document.getElementById('adHint');
       const adActions = document.getElementById('adActions');
-      adBox.innerHTML = '';
-      adActions.innerHTML = '';
-      adHint.textContent = '';
+      const adTimer = document.getElementById('adTimer');
+      adBox.innerHTML = ''; adActions.innerHTML = ''; adHint.textContent = ''; adTimer.textContent='';
 
-      const idx = Math.floor(Math.random()*ADS.length);
-      const url = ADS[idx];
-
+      renderAdInto(adBox);
       openModal('ad');
 
-      if(url.endsWith('.mp4')){
-        const v = document.createElement('video');
-        v.src = url; v.controls = true; v.autoplay = true; v.playsInline = true;
-        adBox.appendChild(v);
-        adHint.textContent = 'Tonton sampai selesai untuk mendapatkan +3 kunci.';
-        v.onended = () => {
-          closeModal('ad');
-          grantKeys(3);
-          if(onDone) onDone();
-          alert('Mantap! Kamu mendapatkan +3 kunci.');
-        };
-      }else{
-        const img = document.createElement('img');
-        img.src = url;
-        adBox.appendChild(img);
-        adHint.textContent = 'Tap tombol di bawah untuk menutup iklan dan klaim +3 kunci.';
-        const ok = document.createElement('button');
-        ok.className = 'btn';
-        ok.textContent = 'Tutup Iklan & Klaim +3 Kunci';
-        ok.onclick = () => {
-          closeModal('ad');
-          grantKeys(3);
-          if(onDone) onDone();
-          alert('Mantap! Kamu mendapatkan +3 kunci.');
-        };
-        adActions.appendChild(ok);
-      }
+      // Quick model: tombol untuk klaim setelah minimal 5 detik
+      let left = 5; adTimer.textContent = `Sisa waktu: ${left} detik`;
+      const t = setInterval(()=>{
+        left--; adTimer.textContent = `Sisa waktu: ${left} detik`;
+        if(left<=0){
+          clearInterval(t);
+          adHint.textContent = 'Klik tombol untuk klaim +3 kunci.';
+          const ok = document.createElement('button');
+          ok.className = 'btn'; ok.textContent = 'Tutup Iklan & Klaim +3 Kunci';
+          ok.onclick = () => { closeModal('ad'); grantKeys(3); onDone && onDone(); alert('Mantap! Kamu mendapatkan +3 kunci.'); };
+          adActions.appendChild(ok);
+        }
+      },1000);
+    }
+
+    /* =========================
+       IKLAN: PAKET KEY DENGAN DURASI SPESIFIK
+       ========================= */
+    function startPackageAd(keys, duration){
+      const u = getCurrentUserObj(); if(!u){ alert('Silakan login dulu.'); return; }
+      closeModal('upgrade');
+
+      const adBox = document.getElementById('adBox');
+      const adHint = document.getElementById('adHint');
+      const adActions = document.getElementById('adActions');
+      const adTimer = document.getElementById('adTimer');
+      adBox.innerHTML = ''; adActions.innerHTML = ''; adHint.textContent = ''; adTimer.textContent='';
+
+      renderAdInto(adBox);
+      adHint.textContent = `Tonton iklan sampai selesai (${duration} detik) untuk mendapat ${keys} kunci.`;
+      openModal('ad');
+
+      let left = duration; adTimer.textContent = `Sisa waktu: ${left} detik`;
+      const t = setInterval(()=>{
+        left--; adTimer.textContent = `Sisa waktu: ${left} detik`;
+        if(left<=0){
+          clearInterval(t);
+          adHint.textContent = 'Selesai! Kamu bisa klaim kuncimu.';
+          const ok = document.createElement('button');
+          ok.className = 'btn'; ok.textContent = `Klaim ${keys} Kunci`;
+          ok.onclick = () => { closeModal('ad'); grantKeys(keys); alert(`Iklan selesai! Kamu mendapat ${keys} kunci 🔑.`); };
+          adActions.appendChild(ok);
+        }
+      },1000);
     }
 
     function grantKeys(n){
@@ -487,18 +538,9 @@
 
     function consumeKeyIfBasic(){
       const u = getCurrentUserObj(); if(!u) return false;
-      if(u.role === 'premium') return true;
-      const k = u.keys || 0;
-      if(k <= 0) return false;
+      const k = u.keys || 0; if(k <= 0) return false;
       saveCurrentUserObj(prev => ({...prev, keys: (prev.keys||0) - 1}));
       return true;
-    }
-
-    function confirmUpgrade(){
-      const u = getCurrentUserObj(); if(!u){ alert('Silakan login dulu.'); return; }
-      saveCurrentUserObj(prev => ({...prev, role:'premium'}));
-      closeModal('upgrade');
-      alert('Selamat! Akunmu sekarang Premium (unlimited).');
     }
 
     /* =========================
@@ -513,26 +555,17 @@
       document.querySelector('.player').scrollIntoView({behavior:'smooth', block:'start'});
     }
 
-    // Flow baru: klik episode -> cek login + keys/role
+    // Flow: klik episode -> cek login + keys
     function requestPlay(link, judul){
       const user = getCurrentUserObj();
       if(!user){ openAuth(); return; }
 
-      if(user.role === 'premium'){
-        gantiEpisode(link, judul);
-        return;
-      }
-
-      // BASIC: butuh kunci
       if((user.keys||0) <= 0){
-        // tampilkan modal pilihan
         openModal('need-keys');
-        // simpan intent supaya setelah dapat kunci bisa lanjut
         pendingPlay = { link, judul };
         return;
       }
 
-      // masih punya kunci -> pakai 1
       if(consumeKeyIfBasic()){
         gantiEpisode(link, judul);
       }else{
@@ -548,7 +581,6 @@
       watchAdForKeys(()=> {
         closeModal('need-keys');
         if(pendingPlay){
-          // setelah dapat kunci, langsung konsumsi & play
           if(consumeKeyIfBasic()){
             gantiEpisode(pendingPlay.link, pendingPlay.judul);
             pendingPlay = null;
@@ -556,18 +588,16 @@
         }
       });
     }
-    // sambungkan tombol di modal need-keys
-    const needKeysModal = document.getElementById('modal-need-keys');
-    if(needKeysModal){
-      // override tombol default agar pakai flow continue
-      needKeysModal.querySelector('.btn').onclick = watchAdForKeysAndContinue;
-    }
 
-    // Modal open/close untuk daftar anime
-    function openModal(id){ document.getElementById('modal-'+id).style.display='flex'; }
-    function closeModal(id){ document.getElementById('modal-'+id).style.display='none'; }
+    // Sambungkan tombol +3 kunci
+    const btnWatchAd3 = document.getElementById('btnWatchAd3');
+    if(btnWatchAd3){ btnWatchAd3.addEventListener('click', watchAdForKeysAndContinue); }
 
-    // Search by title/genre
+    // Tutup modal saat klik backdrop / tekan ESC (perbaikan kasus laptop)
+    window.addEventListener('click', e=>{ if(e.target.classList.contains('modal')) e.target.style.display='none'; });
+    window.addEventListener('keydown', e=>{ if(e.key==='Escape'){ document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); }});
+
+    // Search by title/genre (realtime)
     document.getElementById('searchInput').addEventListener('input', function(){
       const q = this.value.trim().toLowerCase();
       document.querySelectorAll('#animeList .card').forEach(card=>{
